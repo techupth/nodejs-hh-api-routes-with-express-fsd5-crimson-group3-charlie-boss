@@ -1,8 +1,10 @@
 // Start coding here
 import express from "express";
 import { assignments } from "./data/assignments.js";
+import { comments } from "./data/comments.js";
 
 let assignmentsDatabase = assignments;
+let commentsDatabase = comments;
 
 const app = express();
 const port = 4000;
@@ -92,5 +94,30 @@ app.put("/assignments/:assignmentsId", (req, res) => {
   return res.json({
     message: `Assignment Id : ${assignmentsIdFromClient}  has been updated successfully`,
     data: assignmentsDatabase[assignmentsIndex],
+  });
+});
+
+app.get("/assignments/:assignmentsId/comments", (req, res) => {
+  const assignementsIdFromClient = Number(req.params.assignmentsId);
+  let commentsData = commentsDatabase.filter((item) => {
+    return item.assignmentId === assignementsIdFromClient;
+  });
+  return res.json({
+    message: "Complete fetching comments",
+    data: commentsData,
+  });
+});
+
+app.post("/assignments/:assignmentsId/comments", (req, res) => {
+  const assignementsIdFromClient = Number(req.params.assignmentsId);
+  let commentsNewData = {
+    id: commentsDatabase[commentsDatabase.length - 1].id + 1,
+    assignmentId: assignementsIdFromClient,
+    content: req.body?.content,
+  };
+  commentsDatabase.push(commentsNewData);
+  return res.json({
+    message: "New comment has been created successfully",
+    data: commentsNewData,
   });
 });
